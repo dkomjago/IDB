@@ -1,71 +1,109 @@
-import React, {useState,useCallback} from 'react';
-import DropZone from './dropZone/DropZone';
-import Navigation from "./navigation/Navigation";
-import ModifyImage from "./modifyImage/ModifyImage";
-import { uploadImage, getCurrentUser } from '../../util/APIUtils';
+import React, {useCallback, useState, useEffect} from 'react';
+import AddImage from "./addImage/AddImage";
+import Showcase from "react-grid-gallery";
+import {isEmpty, notification} from "../../util/Helpers";
+import Mods from "./mods/Mods";
+import {deleteImage, getImage, getImages} from "../../util/APIUtils";
+import {Modal} from 'antd'
 
 export default function Gallery() {
 
-    const [imgSrc,setImgSrc] = useState('');
-    const [imgText,setImgText] = useState({
-        upperText: '',
-        lowerText: ''
+    const [gallery, setGallery] = useState([]);
+
+    const [mods, setMods] = useState([]);
+
+    const [state, setState] = useState(0);
+
+    const [img, setImg] = useState({
+        src: null,
+        id: null
     });
 
-    const [cropped,setCropped] = useState({
-        x: 0,
-        y: 0,
-        cropWidth: 0,
-        cropHeight: 0,
-        width: 0,
-        height: 0
-    });
+    useEffect(() => {
+        let isSubscribed = true;
+        getImages()
+            .then(response =>
+                isSubscribed ?
+                    setGallery(response) : null);
+        return () => (isSubscribed = false);
+    }, []);
 
-    const [state,setState] = useState(0);
-
-    const onUpload = useCallback(src => {
-        setImgSrc(src);
-        setState(state+1);
-    });
-
-    const onCrop = useCallback((x,y,cropWidth,cropHeight,width,height) => {
-        setCropped({
-            x: x,
-            y: y,
-            cropWidth: cropWidth,
-            cropHeight: cropHeight,
-            width: width,
-            height: height});
-    });
-
-    const onAddText = useCallback((upperText, lowerText) => {
-        setImgText({upperText,lowerText});
-    });
-
-    const onFinish = useCallback(() => {
-        console.log(imgSrc);
-        const uploadImageRequest = {
-            image: '',
-            fileType: imgSrc.match(/\/((.*[a-z]){3}(?=;))/)[1],
-            mods: [cropped.x, cropped.y, cropped.cropWidth, cropped.cropHeight, cropped.width, cropped.height,imgText.upperText,imgText.lowerText],
-            userId: null,
-            username: null
-        };
-        console.log(uploadImageRequest.image);
-        getCurrentUser().then(response => {
-            uploadImageRequest.userId = response.id;
-            uploadImageRequest.username = response.username;
-            console.log(uploadImageRequest);
-            uploadImage(uploadImageRequest)
+    function setSource(index, image, browseMods) {
+        const needSource = image.src === "";
+        getImage(image.realId, needSource).then(response => {
+            if(browseMods) {
+                if (!isEmpty(response.mods)) {
+                    setMods(response.mods);
+                    setState(1);
+                }
+                else {
+                    notification("This image has no modifications!", false);
+                    return;
+                }
+            }
+            if (needSource) {
+                image.src = response.image;
+            }
+            setImg({
+                src: image.src,
+                id: image.realId
+            });
         });
-        setState(0);
-    });
+    }
 
-    return(
+    const onClickThumbnail = useCallback((index) => {
+        setSource(index, gallery[index], true);
+    },[gallery]);
+
+    const onSelectImage = useCallback((index,image) => {
+        setSource(index, image, false);
+    }, []);
+
+    function cancel() {
+        setImg({
+            src: null,
+            id: null
+        })
+    }
+
+    function add(image) {
+        setGallery(gallery.concat(image));
+    }
+
+    const onDeleteImage = useCallback((index,image) => {
+        Modal.confirm({
+            title: 'Are you sure you want to delete this item?',
+            content: 'This operation with also delete all modifications of this image',
+            okText: 'Yes',
+            okType: 'danger',
+            cancelText: 'No',
+            onOk() {
+                deleteImage(image.realId).then(response => {
+                    notification(response.message,response.success);
+                    cancel();
+                    setGallery(gallery.filter((x,i)=>i!==index));
+                })
+            },
+            onCancel() {},
+        });
+    },[gallery]);
+
+    return (
         <div>
-            <DropZone state={state} onUpload={onUpload}/>
-            <Navigation state={state} onProceed={() => {state<2?setState(state+1):onFinish();}} onCancel={() => setState(0)}/>
-            <ModifyImage state={state} onCrop={onCrop} onAddText={onAddText} imgSrc={imgSrc}/>
+            {
+                state === 0 ?
+                    <div>
+                        <AddImage img={img} onCancel={cancel} onFinish={add}/>
+                        <br/>
+                        <Showcase images={gallery} onClickThumbnail={onClickThumbnail}
+                                  onSelectImage={onSelectImage} onDeleteImage={onDeleteImage}/>
+                        {isEmpty(gallery) ? "Gallery is empty :(" : null}
+                    </div> :
+                    <Mods src={img.src} mods={mods} setMods={setMods} onReturn={() => {
+                        setState(0);
+                        cancel();
+                    }}/>
+            }
         </div>
     )
 }

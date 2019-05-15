@@ -7,10 +7,12 @@ import idb.repository.RoleRepository;
 import idb.repository.UserRepository;
 import idb.security.JwtTokenProvider;
 import idb.security.exception.AppException;
-import idb.security.payload.ApiResponse;
+import idb.utilities.payload.ApiResponse;
 import idb.security.payload.JwtAuthenticationResponse;
 import idb.security.payload.LoginRequest;
 import idb.security.payload.RegisterRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,20 +30,27 @@ import java.util.Collections;
 @Service
 public class AuthService {
 
-    @Autowired
-    AuthenticationManager authenticationManager;
+    private AuthenticationManager authenticationManager;
+    private UserRepository userRepository;
+    private RoleRepository roleRepository;
+    private PasswordEncoder passwordEncoder;
+    private JwtTokenProvider tokenProvider;
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
     @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    RoleRepository roleRepository;
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
-
-    @Autowired
-    JwtTokenProvider tokenProvider;
+    public AuthService(
+            AuthenticationManager authenticationManager,
+                       UserRepository userRepository,
+                       RoleRepository roleRepository,
+                       PasswordEncoder passwordEncoder,
+                       JwtTokenProvider tokenProvider) {
+        this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.tokenProvider = tokenProvider;
+    }
 
     public ResponseEntity<?> authenticateUser(LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
@@ -62,6 +71,9 @@ public class AuthService {
                     HttpStatus.BAD_REQUEST);
         }
 
+        logger.error(registerRequest.toString());
+        logger.error(registerRequest.getPassword());
+        logger.error(passwordEncoder.encode(registerRequest.getPassword()));
         // Creating user's account
         User user = new User();
         user.setUsername(registerRequest.getUsername());

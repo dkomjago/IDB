@@ -13,11 +13,11 @@ export default function Crop(props) {
 
     const onComplete = useCallback( (crop,pixelCrop) => {
         props.onCrop(crop,pixelCrop);
-    });
+    },[props]);
 
-    const onLoaded = useCallback( () => {
-        props.onCrop(0,0);
-    });
+    const onLoaded = useCallback( (crop,pixelCrop) => {
+        props.onCrop(crop,pixelCrop);
+    },[props]);
 
     if(props.state!==1){
         return null;

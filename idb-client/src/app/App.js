@@ -1,13 +1,10 @@
 import React, { Component } from 'react';
 import './App.css';
-import {
-  Route,
-  withRouter,
-  Switch
-} from 'react-router-dom';
+import {Route, withRouter, Switch} from 'react-router-dom';
+import PrivateRoute from '../common/PrivateRoute';
 
 import { getCurrentUser } from '../util/APIUtils';
-import { ACCESS_TOKEN } from '../constants';
+import { ACCESS_TOKEN } from '../constants/constants';
 
 import Login from '../user/login/Login';
 import Registration from '../user/registration/Registration';
@@ -28,7 +25,7 @@ class App extends Component {
       currentUser: null,
       isAuthenticated: false,
       isLoading: false
-    }
+    };
     this.handleLogout = this.handleLogout.bind(this);
     this.loadCurrentUser = this.loadCurrentUser.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
@@ -109,9 +106,7 @@ class App extends Component {
                   <Route path="/users/:username"
                          render={(props) => <Profile isAuthenticated={this.state.isAuthenticated} currentUser={this.state.currentUser} {...props}  />}>
                   </Route>
-                  <Route authenticated={this.state.isAuthenticated} path="/gallery/"
-                         render={(props) => <Gallery isAuthenticated={this.state.isAuthenticated} currentUser={this.state.currentUser} {...props}  />}>
-                  </Route>
+                  <PrivateRoute authenticated={this.state.isAuthenticated} path="/gallery/" component={Gallery} handleLogout={this.handleLogout}></PrivateRoute>
                   <Route component={NotFound}/>
               </Switch>
             </div>

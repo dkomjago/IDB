@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import {
     USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH,
     PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH
-} from '../../constants';
+} from '../../constants/constants';
 
 import { Form, Input, Button, notification } from 'antd';
 const FormItem = Form.Item;
@@ -20,7 +20,7 @@ class Registration extends Component {
             password: {
                 value: ''
             }
-        }
+        };
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.validateUsernameAvailability = this.validateUsernameAvailability.bind(this);

@@ -1,10 +1,10 @@
-import { API_BASE_URL, ACCESS_TOKEN } from '../constants';
+import { API_BASE_URL, ACCESS_TOKEN } from '../constants/constants';
 
 const request = (options) => {
     const headers = new Headers({
         'Content-Type': 'application/json',
-    })
-    
+    });
+
     if(localStorage.getItem(ACCESS_TOKEN)) {
         headers.append('Authorization', 'Bearer ' + localStorage.getItem(ACCESS_TOKEN))
     }
@@ -13,7 +13,7 @@ const request = (options) => {
     options = Object.assign({}, defaults, options);
 
     return fetch(options.url, options)
-    .then(response => 
+    .then(response =>
         response.json().then(json => {
             if(!response.ok) {
                 return Promise.reject(json);
@@ -34,17 +34,52 @@ export function login(loginRequest) {
 export function register(registerRequest) {
     return request({
         url: API_BASE_URL + "/auth/register",
-        method: 'POST',
+        method: 'PUT',
         body: JSON.stringify(registerRequest)
     });
 }
 
 export function uploadImage(uploadImageRequest) {
-    console.log(JSON.stringify(uploadImageRequest));
     return request({
-        url: API_BASE_URL + "/image/upload",
-        method: 'POST',
+        url: API_BASE_URL + "/image",
+        method: 'PUT',
         body: JSON.stringify(uploadImageRequest)
+    });
+}
+
+export function getImage(imageId, needSource) {
+    return request({
+        url: API_BASE_URL + "/image?id=" + imageId +"&src=" + needSource,
+        method: 'GET',
+    });
+}
+
+export function getImages() {
+    return request({
+        url: API_BASE_URL + "/image/gallery",
+        method: 'GET',
+    });
+}
+
+export function deleteImage(imageId) {
+    return request({
+        url: API_BASE_URL + "/image?id=" + imageId,
+        method: 'DELETE',
+    });
+}
+
+export function deleteMod(modId) {
+    return request({
+        url: API_BASE_URL + "/image/mod?id=" + modId,
+        method: 'DELETE',
+    });
+}
+
+export function addMod(imageId,mod) {
+    return request({
+        url: API_BASE_URL + "/image/mod?id=" + imageId,
+        method: 'PUT',
+        body: JSON.stringify(mod)
     });
 }
 

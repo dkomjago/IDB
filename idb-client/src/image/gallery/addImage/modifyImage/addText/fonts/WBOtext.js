@@ -1,9 +1,9 @@
 //Draw impact color white/ black outline to canvas
 
 export function drawOutlineText(upper, canvas, fontName, text) {
-    let ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d");
     ctx.textBaseline = upper? "top" : "bottom";
-    let y = upper? 0: canvas.height;
+    const y = upper? 0: canvas.height;
     ctx.textAlign = "center";
     let fontSize=100;
     do{

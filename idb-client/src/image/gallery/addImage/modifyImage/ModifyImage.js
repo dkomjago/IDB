@@ -1,9 +1,9 @@
 import React, {useState, useCallback, useRef} from 'react'
 import 'react-image-crop/dist/ReactCrop.css';
 import './ModifyImage.css'
-import Crop from "../crop/Crop";
-import AddText from "../addText/AddText";
-import {drawOutlineText} from "../addText/fonts/WBOtext";
+import Crop from "./crop/Crop";
+import AddText from "./addText/AddText";
+import {drawOutlineText} from "./addText/fonts/WBOtext";
 
 export default function ModifyImage(props) {
 
@@ -39,7 +39,7 @@ export default function ModifyImage(props) {
             props.onCrop(x,y,pixelCrop.width,pixelCrop.height,width,height);
         };
         image.src = props.imgSrc;
-    });
+    },[props]);
 
     const onAddText = useCallback( (upperText,lowerText)=> {
         const ctx = canvas.current.getContext("2d");
@@ -51,7 +51,7 @@ export default function ModifyImage(props) {
             props.onAddText(upperText,lowerText);
         };
         image.src = croppedImage;
-    });
+    },[props,croppedImage]);
 
     if (props.state < 1) {
         return null;

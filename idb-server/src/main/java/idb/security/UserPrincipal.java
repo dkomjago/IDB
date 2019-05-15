@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class UserPrincipal implements UserDetails {
+
     @EqualsAndHashCode.Include
     private Long id;
 

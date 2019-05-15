@@ -8,16 +8,16 @@ export default function AddText(props) {
     const lowerInput = useRef();
 
     const onChange = useCallback(()=>{
-        props.onAddText(upperInput.current.input.value,lowerInput.current.input.value)
-    });
+        props.onAddText(upperInput.current.input.value, lowerInput.current.input.value)
+    },[props]);
 
     if(props.state!==2) {
         return null
     }
     return (
         <div>
-            <Input {...props} ref={upperInput} placeholder='Upper text' onChange={onChange}/>
-            <Input {...props} ref={lowerInput} placeholder='Lower text' onChange={onChange}/>
+            <Input ref={upperInput} placeholder='Upper text' defaultValue="" onChange={onChange}/>
+            <Input ref={lowerInput} placeholder='Lower text' defaultValue="" onChange={onChange}/>
         </div>
     )
 }

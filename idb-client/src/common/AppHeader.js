@@ -31,9 +31,6 @@ class AppHeader extends Component {
               <Menu.Item key="/gallery">
                   <Link to="/gallery">Gallery</Link>
               </Menu.Item>,
-              <Menu.Item key="/chat">
-                  <Link to="/chat">Chat</Link>
-              </Menu.Item>,
               <Menu.Item key="/profile" className="profile-menu">
                 <ProfileDropdownMenu 
                   currentUser={this.props.currentUser} 
@@ -96,7 +93,7 @@ function ProfileDropdownMenu(props) {
       overlay={dropdownMenu} 
       trigger={['click']}
       getPopupContainer = { () => document.getElementsByClassName('profile-menu')[0]}>
-      <a className="ant-dropdown-link">
+      <a className="ant-dropdown-link" href="#">
          <Icon type="user" className="nav-icon" style={{marginRight: 0}} /> <Icon type="down" />
       </a>
     </Dropdown>

@@ -4,20 +4,26 @@ import idb.entity.user.payload.ActiveUsers;
 import idb.entity.user.payload.UserIdentityAvailability;
 import idb.entity.user.payload.UserProfile;
 import idb.entity.user.payload.UserSummary;
+
 import idb.security.CurrentUser;
 import idb.security.UserPrincipal;
+
 import idb.service.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/api")
 public class UserController {
 
+    private UserService userService;
+
     @Autowired
-    UserService userService;
+    public UserController(UserService userService){
+        this.userService = userService;
+    }
 
     @GetMapping("/user/me")
     @PreAuthorize("hasRole('USER')")

@@ -6,6 +6,9 @@ import lombok.Setter;
 
 import java.util.HashMap;
 
+/**
+ * DTO for sending online user names and id's
+ */
 @Getter
 @Setter
 @AllArgsConstructor

@@ -1,6 +1,7 @@
 import React, {useCallback, useMemo} from 'react'
 import {useDropzone} from 'react-dropzone'
 import {FaFileImage} from "react-icons/fa";
+import {notification} from "../../../../util/Helpers";
 import './DropZone.css'
 
 const baseStyle = {
@@ -32,15 +33,15 @@ export default function DropZone(props) {
     const onDrop = useCallback(acceptedFiles => {
         const reader = new FileReader();
 
-        reader.onabort = () => console.log('file reading was aborted');
-        reader.onerror = () => console.log('file reading has failed');
+        reader.onabort = () => notification('Image upload aborted!', false);
+        reader.onerror = () => notification('Image upload failed!', false);
         reader.onload = () => {
             // read uploaded file as dataurl and pass to parent
             const readUrl = reader.result;
             props.onUpload(readUrl);
         };
         reader.readAsDataURL(acceptedFiles[0]);
-    }, []);
+    }, [props]);
 
     const {getRootProps, getInputProps, isDragActive, isDragAccept,
         isDragReject} = useDropzone({
@@ -56,7 +57,8 @@ export default function DropZone(props) {
         ...(isDragReject ? rejectStyle : {})
     }), [
         isDragActive,
-        isDragReject
+        isDragReject,
+        isDragAccept
     ]);
 
     if(props.state!==0) {

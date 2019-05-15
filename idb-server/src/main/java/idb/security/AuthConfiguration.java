@@ -1,7 +1,6 @@
 package idb.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -28,11 +27,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 )
 public class AuthConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    CustomUserDetailsService customUserDetailsService;
+    private CustomUserDetailsService customUserDetailsService;
+    private JwtAuthenticationEntryPoint unauthorizedHandler;
+
 
     @Autowired
-    private JwtAuthenticationEntryPoint unauthorizedHandler;
+    public AuthConfiguration(CustomUserDetailsService customUserDetailsService,JwtAuthenticationEntryPoint unauthorizedHandler){
+        this.customUserDetailsService = customUserDetailsService;
+        this.unauthorizedHandler = unauthorizedHandler;
+    }
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
@@ -81,6 +84,7 @@ public class AuthConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/h2_console/**").permitAll()
                 .antMatchers("/registration").permitAll()
                 .antMatchers( "/api/image/**").permitAll()
+                .antMatchers( "/api/image").permitAll()
                 .antMatchers("/admin/**").hasAuthority("ADMIN").anyRequest()
                 .authenticated();
 
