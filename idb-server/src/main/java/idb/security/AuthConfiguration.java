@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
@@ -27,13 +28,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 )
 public class AuthConfiguration extends WebSecurityConfigurerAdapter {
 
-    private CustomUserDetailsService customUserDetailsService;
-    private JwtAuthenticationEntryPoint unauthorizedHandler;
+    private UserDetailsService userDetailsService;
+    private AuthenticationEntryPoint unauthorizedHandler;
 
 
     @Autowired
-    public AuthConfiguration(CustomUserDetailsService customUserDetailsService,JwtAuthenticationEntryPoint unauthorizedHandler){
-        this.customUserDetailsService = customUserDetailsService;
+    public AuthConfiguration(UserDetailsService userDetailsService, AuthenticationEntryPoint unauthorizedHandler){
+        this.userDetailsService = userDetailsService;
         this.unauthorizedHandler = unauthorizedHandler;
     }
 
@@ -56,7 +57,7 @@ public class AuthConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
-                .userDetailsService(customUserDetailsService)
+                .userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder());
     }
 
@@ -93,7 +94,7 @@ public class AuthConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    public void configure(WebSecurity web) throws Exception {
+    public void configure(WebSecurity web){
         web
                 .ignoring()
                 .antMatchers("/resources/**", "/static/**", "/templates/**", "/css/**", "/js/**", "/images/**", "/h2/**");
