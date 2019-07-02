@@ -4,4 +4,4 @@ Aplikacja Spring z bazą danych H2(inmemory)/Postgresql, klient webowy wykonany 
 Zdeployowana na heroku: https://idb-spring.herokuapp.com/
 
 //TODO//
-Async loading for image uploading
+Async loading for image upload
